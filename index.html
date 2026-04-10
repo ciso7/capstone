@@ -1,1 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GlycoAhead | Low-Latency Early Warning System for Canine Glucose Monitoring</title>
+  <style>
+    :root {
+      --bg: #f4fbf7;
+      --surface: rgba(255, 255, 255, 0.88);
+      --surface-strong: #ffffff;
+      --text: #1d3b31;
+      --muted: #5f7b70;
+      --primary: #7bb79c;
+      --primary-dark: #4f8f72;
+      --accent: #cbebde;
+      --accent-soft: #e9f7f0;
+      --border: rgba(95, 143, 114, 0.14);
+      --shadow: 0 18px 50px rgba(92, 136, 113, 0.12);
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --radius-sm: 12px;
+      --max-width: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 92px;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #f7fcf9 0%, #f4faf7 34%, #ffffff 100%);
+      line-height: 1.6;
+      scroll-snap-type: y proximity;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    .container {
+      width: min(var(--max-width), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .nav-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      background: rgba(247, 252, 249, 0.76);
+      border-bottom: 1px solid rgba(95, 143, 114, 0.1);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 16px 0;
+      gap: 20px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      font-size: 0.96rem;
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary-dark);
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 13px 20px;
+      border-radius: 999px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button-primary {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      color: white;
+      box-shadow: 0 16px 32px rgba(95, 143, 114, 0.22);
+    }
+
+    .button-secondary {
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--primary-dark);
+      border-color: rgba(95, 143, 114, 0.16);
+    }
+
+    .hero {
+      position: relative;
+      min-height: calc(100svh - 76px);
+      display: flex;
+      align-items: center;
+      padding: 56px 0;
+      overflow: hidden;
+      isolation: isolate;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.62), rgba(255,255,255,0.18)),
+        radial-gradient(circle at 18% 22%, rgba(203, 235, 222, 0.96), transparent 26%),
+        radial-gradient(circle at 82% 18%, rgba(159, 208, 184, 0.42), transparent 24%),
+        radial-gradient(circle at 72% 72%, rgba(110, 167, 142, 0.18), transparent 22%),
+        linear-gradient(135deg, #f7fdf9 0%, #eef8f2 42%, #f8fcfa 100%);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(255,255,255,0.18) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.18) 1px, transparent 1px);
+      background-size: 36px 36px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.65), transparent 88%);
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 520px;
+      height: 520px;
+      right: -120px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.65), rgba(203,235,222,0.08) 45%, transparent 72%);
+      filter: blur(8px);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+      gap: 40px;
+      align-items: center;
+      width: 100%;
+      max-width: 980px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-chart-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+      opacity: 0.72;
+    }
+
+    .hero-chart-bg::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(247,253,249,0.95) 0%, rgba(247,253,249,0.72) 28%, rgba(247,253,249,0.18) 54%, rgba(247,253,249,0.42) 100%);
+    }
+
+    .hero-chart-bg svg {
+      position: absolute;
+      width: min(980px, 90vw);
+      height: auto;
+      right: -20px;
+      top: 50%;
+      transform: translateY(-50%);
+      filter: drop-shadow(0 12px 30px rgba(79, 143, 114, 0.10));
+    }
+
+    .hero-chart-grid {
+      stroke: rgba(95, 143, 114, 0.08);
+      stroke-width: 1;
+    }
+
+    .hero-chart-line {
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 1200;
+      stroke-dashoffset: 1200;
+      animation: chartDraw 2.6s ease forwards, chartFloat 8s ease-in-out infinite 2.6s;
+    }
+
+    .hero-chart-line.main {
+      stroke: rgba(79, 143, 114, 0.88);
+      stroke-width: 5;
+    }
+
+    .hero-chart-line.alt {
+      stroke: rgba(123, 183, 156, 0.58);
+      stroke-width: 3.5;
+      animation-delay: 0.25s, 2.85s;
+    }
+
+    .hero-chart-line.soft {
+      stroke: rgba(203, 235, 222, 0.95);
+      stroke-width: 8;
+      animation-delay: 0.1s, 2.7s;
+    }
+
+    .hero-chart-point {
+      transform-origin: center;
+      animation: pointPulse 2.4s ease-in-out infinite;
+    }
+
+    .hero-chart-point.one {
+      animation-delay: 0.4s;
+    }
+
+    .hero-chart-point.two {
+      animation-delay: 1s;
+    }
+
+    .hero-chart-point.three {
+      animation-delay: 1.6s;
+    }
+
+    @keyframes chartDraw {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes chartFloat {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+
+    @keyframes pointPulse {
+      0%, 100% {
+        opacity: 0.45;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.18);
+      }
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--primary-dark);
+      border: 1px solid rgba(95, 143, 114, 0.12);
+      padding: 9px 15px;
+      border-radius: 999px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      box-shadow: 0 10px 24px rgba(92, 136, 113, 0.08);
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.8rem, 6vw, 4.8rem);
+      line-height: 0.98;
+      letter-spacing: -0.045em;
+      max-width: 560px;
+    }
+
+    .subtitle {
+      margin-top: 16px;
+      font-size: clamp(1.02rem, 1.8vw, 1.16rem);
+      color: var(--muted);
+      max-width: 600px;
+    }
+
+    .mission-card,
+    .glass-card,
+    .quote-card,
+    .stat-card,
+    .feature-card,
+    .team-card,
+    .architecture-card,
+    .highlight-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .hero-actions {
+      margin-top: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .mission-card {
+      padding: 40px 34px;
+      position: relative;
+      overflow: hidden;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: linear-gradient(145deg, rgba(255,255,255,0.84), rgba(233,247,240,0.82));
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      box-shadow: 0 28px 70px rgba(92, 136, 113, 0.16);
+      backdrop-filter: blur(20px);
+    }
+
+    .mission-card::before {
+      content: "";
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      top: -70px;
+      right: -50px;
+      background: radial-gradient(circle, rgba(203, 235, 222, 0.98), transparent 64%);
+      pointer-events: none;
+    }
+
+    .mission-card::after {
+      content: "";
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      bottom: -70px;
+      left: -40px;
+      background: radial-gradient(circle, rgba(123, 183, 156, 0.16), transparent 68%);
+      pointer-events: none;
+    }
+
+    .mission-card h3,
+    .section-heading h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.4rem, 2vw, 2rem);
+      letter-spacing: -0.02em;
+    }
+
+    .mission-card p,
+    .section-heading p,
+    .feature-card p,
+    .architecture-card p,
+    .team-card p,
+    .highlight-card p,
+    .quote-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .mission-kicker {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      margin-bottom: 16px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(203, 235, 222, 0.88);
+      color: var(--primary-dark);
+      font-size: 0.86rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1;
+    }
+
+    .mission-statement {
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+      line-height: 1.55;
+      color: var(--text);
+      max-width: 520px;
+      position: relative;
+      z-index: 1;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
+
+    .mission-accent {
+      margin-top: 18px;
+      width: 84px;
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--primary-dark), rgba(123, 183, 156, 0.28));
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes fadeUpSoft {
+      from {
+        opacity: 0;
+        transform: translateY(22px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-copy,
+    .mission-card {
+      opacity: 0;
+      animation: fadeUpSoft 0.9s ease forwards;
+    }
+
+    .hero-copy {
+      animation-delay: 0.08s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .mission-card {
+      animation-delay: 0.28s;
+    }
+
+    section {
+      padding: 36px 0;
+      scroll-margin-top: 96px;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      position: relative;
+    }
+
+    .reveal-section {
+      opacity: 0;
+      transform: translateY(34px);
+      transition: opacity 0.85s ease, transform 0.85s ease;
+    }
+
+    .reveal-section.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hero.reveal-section,
+    .hero.reveal-section.is-visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    main > section:nth-of-type(even):not(.hero) {
+      background: linear-gradient(180deg, rgba(233, 247, 240, 0.72), rgba(244, 251, 247, 0.92));
+      border-top: 1px solid rgba(95, 143, 114, 0.06);
+      border-bottom: 1px solid rgba(95, 143, 114, 0.06);
+    }
+
+    main > section:nth-of-type(odd):not(.hero) {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(246, 251, 248, 0.96));
+    }
+
+    .section-heading {
+      margin-bottom: 22px;
+      max-width: 860px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 24px;
+    }
+
+    .glass-card {
+      padding: 28px;
+    }
+
+    .quote-grid,
+    .stats-grid,
+    .feature-grid,
+    .team-grid,
+    .highlights-grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .quote-grid {
+      grid-template-columns: repeat(3, 1fr);
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+
+    .quote-card {
+      padding: 28px 26px 24px;
+      position: relative;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(233,247,240,0.78));
+      border-radius: 34px;
+    }
+
+    .quote-card::after {
+      content: "";
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      bottom: -8px;
+      left: 32px;
+      background: rgba(233,247,240,0.92);
+      border-right: 1px solid rgba(95, 143, 114, 0.08);
+      border-bottom: 1px solid rgba(95, 143, 114, 0.08);
+      transform: rotate(45deg);
+      border-bottom-right-radius: 6px;
+    }
+
+    .quote-card:nth-child(1) {
+      border-radius: 34px 34px 34px 14px;
+    }
+
+    .quote-card:nth-child(2) {
+      border-radius: 28px 40px 28px 28px;
+    }
+
+    .quote-card:nth-child(3) {
+      border-radius: 40px 28px 18px 34px;
+    }
+
+    .quote-mark {
+      font-size: 2.4rem;
+      line-height: 1;
+      color: rgba(95, 143, 114, 0.3);
+      margin-bottom: 10px;
+      display: inline-block;
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .stat-card {
+      padding: 22px;
+      text-align: left;
+    }
+
+    .stat-number {
+      font-size: clamp(1.9rem, 3vw, 2.6rem);
+      font-weight: 800;
+      line-height: 1.05;
+      color: var(--primary-dark);
+    }
+
+    .stat-label {
+      margin-top: 8px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .feature-grid {
+      grid-template-columns: repeat(2, 1fr);
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .feature-card,
+    .team-card,
+    .architecture-card,
+    .highlight-card {
+      padding: 24px;
+    }
+
+    .feature-card {
+      padding: 32px 28px;
+      text-align: center;
+    }
+
+    .feature-card p {
+      max-width: 360px;
+      margin: 0 auto;
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .card-title {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 14px;
+      font-weight: 800;
+      font-size: 1.28rem;
+      text-align: center;
+      line-height: 1.35;
+    }
+
+    .icon-badge {
+      width: 78px;
+      height: 78px;
+      border-radius: 22px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(123, 183, 156, 0.16), rgba(203, 235, 222, 0.9));
+      color: var(--primary-dark);
+      font-size: 2rem;
+      flex-shrink: 0;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+
+    .architecture-image-wrap {
+      margin-top: 22px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .architecture-image {
+      width: 100%;
+      max-width: 980px;
+      border-radius: 24px;
+      background: white;
+      box-shadow: 0 18px 40px rgba(92, 136, 113, 0.12);
+      border: 1px solid rgba(95, 143, 114, 0.12);
+    }
+
+    .demo-wrap {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .demo-card {
+      padding: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .demo-video {
+      width: 100%;
+      display: block;
+      border-radius: 22px;
+      background: #000;
+      box-shadow: 0 18px 40px rgba(92, 136, 113, 0.12);
+    }
+
+    .highlights-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .team-grid {
+      grid-template-columns: repeat(3, 1fr);
+      max-width: 760px;
+      margin: 0 auto;
+      justify-items: center;
+      gap: 28px;
+    }
+
+    .team-card {
+      width: 100%;
+      max-width: 210px;
+      padding: 0;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      backdrop-filter: none;
+      text-align: center;
+    }
+
+    .team-photo {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 24px;
+      border: 1px solid rgba(95, 143, 114, 0.12);
+      box-shadow: 0 16px 34px rgba(92, 136, 113, 0.12);
+      background: #eef7f2;
+    }
+
+    .team-name {
+      margin-top: 14px;
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.35;
+    }
+
+    .footer-cta {
+      padding: 36px;
+      margin-top: 12px;
+      text-align: center;
+      background: linear-gradient(135deg, #6ea78e, #9fd0b8);
+      color: white;
+      border-radius: 28px;
+      box-shadow: 0 20px 48px rgba(95, 143, 114, 0.2);
+    }
+
+    .footer-cta h3 {
+      margin: 0 0 12px;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      letter-spacing: -0.02em;
+    }
+
+    .footer-cta p {
+      margin: 0 auto 18px;
+      max-width: 760px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    footer {
+      padding: 28px 0 40px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.94rem;
+    }
+
+    .small-note {
+      font-size: 0.92rem;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    @media (max-width: 1024px) {
+      .hero-grid {
+        max-width: 860px;
+      }
+
+      .hero-grid,
+      .two-col,
+      .quote-grid,
+      .stats-grid,
+      .feature-grid,
+      .highlights-grid,
+      .team-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .hero-chart-bg {
+        opacity: 0.48;
+      }
+
+      .hero-chart-bg svg {
+        width: 120vw;
+        right: -120px;
+        top: 58%;
+      }
+
+      .hero {
+        min-height: auto;
+        padding-top: 44px;
+        padding-bottom: 52px;
+      }
+
+      .hero::after {
+        width: 320px;
+        height: 320px;
+        right: -120px;
+      }
+
+      nav {
+        align-items: flex-start;
+      }
+
+      .hero {
+        padding-top: 40px;
+      }
+
+      .hero-grid,
+      .two-col,
+      .quote-grid,
+      .stats-grid,
+      .feature-grid,
+      .highlights-grid,
+      .team-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-copy,
+      .mission-card {
+        animation-delay: 0s;
+      }
+
+      .mission-card,
+      .glass-card,
+      .quote-card,
+      .stat-card,
+      .feature-card,
+      .team-card,
+      .architecture-card,
+      .highlight-card,
+      .footer-cta {
+        padding: 22px;
+      }
+
+      h1 {
+        font-size: 2.35rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-wrap">
+    <div class="container">
+      <nav>
+        <div class="nav-links">
+          <a href="#research">User Research</a>
+          <a href="#features">Features</a>
+          <a href="#architecture">Architecture</a>
+          <a href="#demo">Demo</a>
+          <a href="#team">Team</a>
+          <a class="button button-secondary" href="https://github.com/WooJung-K/DATASCI210_Capstone" target="_blank" rel="noreferrer">View GitHub</a>
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <main>
+    <section class="hero">
+      <div class="hero-chart-bg" aria-hidden="true">
+        <svg viewBox="0 0 1400 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="glowLine" x1="160" y1="260" x2="1260" y2="300" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#cbebde" stop-opacity="0.25"/>
+              <stop offset="0.5" stop-color="#7bb79c" stop-opacity="0.9"/>
+              <stop offset="1" stop-color="#4f8f72" stop-opacity="0.55"/>
+            </linearGradient>
+          </defs>
+          <g>
+            <path class="hero-chart-grid" d="M130 180H1290" />
+            <path class="hero-chart-grid" d="M130 290H1290" />
+            <path class="hero-chart-grid" d="M130 400H1290" />
+            <path class="hero-chart-grid" d="M130 510H1290" />
+          </g>
+          <path class="hero-chart-line soft" d="M120 430 C220 430, 255 360, 330 350 C420 338, 470 425, 555 430 C640 436, 700 300, 800 276 C900 252, 950 318, 1030 320 C1120 322, 1170 228, 1280 212" />
+          <path class="hero-chart-line alt" d="M120 458 C230 442, 270 385, 350 395 C450 408, 520 515, 620 500 C700 488, 760 338, 850 330 C945 322, 1015 392, 1095 382 C1175 372, 1230 272, 1290 248" />
+          <path class="hero-chart-line main" stroke="url(#glowLine)" d="M120 445 C210 432, 270 278, 360 270 C450 262, 485 380, 575 390 C655 400, 728 220, 820 210 C920 199, 980 305, 1070 292 C1160 279, 1218 168, 1290 150" />
+          <circle class="hero-chart-point one" cx="360" cy="270" r="8" fill="#7bb79c" />
+          <circle class="hero-chart-point two" cx="820" cy="210" r="9" fill="#4f8f72" />
+          <circle class="hero-chart-point three" cx="1070" cy="292" r="8" fill="#7bb79c" />
+          <circle cx="360" cy="270" r="18" fill="#7bb79c" fill-opacity="0.12" />
+          <circle cx="820" cy="210" r="22" fill="#4f8f72" fill-opacity="0.10" />
+          <circle cx="1070" cy="292" r="18" fill="#7bb79c" fill-opacity="0.12" />
+        </svg>
+      </div>
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow">AI for Canine Diabetes Care</div>
+          <h1>GlycoAhead</h1>
+          <p class="subtitle"><strong>Low-Latency Early Warning System for Canine Glucose Monitoring</strong></p>
+        </div>
+
+        <div class="mission-card">
+          <div class="mission-kicker">Our Mission</div>
+          <p class="mission-statement">Harnessing AI-powered protection for pets, so families can care with more confidence and peace of mind.</p>
+          <div class="mission-accent"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="research">
+      <div class="container">
+        <div class="section-heading">
+          <h2>User Research</h2>
+          <p>These owner experiences shaped the problem definition and guided the design of GlycoAhead.</p>
+        </div>
+        <div class="quote-grid">
+          <div class="quote-card">
+            <span class="quote-mark">“</span>
+            <p>I haven’t been sleeping well. I fear I might miss my dog’s overnight hypoglycemic crash.</p>
+          </div>
+          <div class="quote-card">
+            <span class="quote-mark">“</span>
+            <p>The device crashes in critical situations — when my dog’s glucose level fluctuates or starts to decline fast. I am not able to get essential information when I need it desperately.</p>
+          </div>
+          <div class="quote-card">
+            <span class="quote-mark">“</span>
+            <p>I don’t find the device trustworthy, but it’s the only option that I can take.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="container">
+        <div class="section-heading">
+          <h2>Features We Deliver</h2>
+          <p>A focused first version centered on earlier warnings, interpretable outputs, and practical pet-owner usability.</p>
+        </div>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="card-title">
+              <div class="icon-badge">📈</div>
+              Future Glucose Category Prediction
+            </div>
+            <p>Predicts the future glucose category from recent glucose behavior using a 30-minute input window and a 15-minute-ahead prediction target.</p>
+          </div>
+          <div class="feature-card">
+            <div class="card-title">
+              <div class="icon-badge">🤖</div>
+              Machine Learning Models
+            </div>
+            <p>Uses machine learning models to classify likely future glucose states and surface early signs of hypoglycemic and hyperglycemic risk.</p>
+          </div>
+          <div class="feature-card">
+            <div class="card-title">
+              <div class="icon-badge">🧭</div>
+              Easy-to-Understand UI
+            </div>
+            <p>Designed to help owners quickly see current status and revisit historical patterns in their pet’s glucose fluctuations.</p>
+          </div>
+          <div class="feature-card">
+            <div class="card-title">
+              <div class="icon-badge">⚡</div>
+              Low-Latency Warning Support
+            </div>
+            <p>Extends beyond sparse observed readings by reconstructing minute-level signals, enabling more timely alerts and intervention opportunities.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="architecture">
+      <div class="container">
+        <div class="section-heading">
+          <h2>How It Works</h2>
+          <p>Deployment architecture from glucose input to predictive warning output.</p>
+        </div>
+        <div class="architecture-card">
+          <p>
+            GlycoAhead combines sensor data processing, interpolation, feature engineering, and predictive modeling into a streamlined early-warning workflow.
+          </p>
+          <div class="architecture-image-wrap">
+            <img src="assets/how-it-works.png" alt="GlycoAhead deployment architecture" class="architecture-image">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="demo">
+      <div class="container">
+        <div class="section-heading">
+          <h2>Demo</h2>
+          <p>A quick look at the GlycoAhead experience in action.</p>
+        </div>
+        <div class="demo-wrap">
+          <div class="demo-card">
+            <video class="demo-video" controls playsinline preload="metadata">
+              <source src="assets/demo.mov" type="video/quicktime">
+              Your browser does not support the demo video.
+            </video>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="section-heading">
+          <h2>Technical Highlights</h2>
+          <p>Core modeling and evaluation choices that make the project robust and practical.</p>
+        </div>
+        <div class="highlights-grid">
+          <div class="highlight-card">
+            <div class="card-title">
+              <div class="icon-badge">🔀</div>
+              Splitting and Interpolation
+            </div>
+            <p>Careful data splitting and interpolation help preserve realistic temporal patterns while creating usable minute-level signals.</p>
+          </div>
+          <div class="highlight-card">
+            <div class="card-title">
+              <div class="icon-badge">🐶</div>
+              Leave-One-Dog-Out Validation
+            </div>
+            <p>Evaluation is designed to test generalization across dogs, not just repeated performance on the same pet.</p>
+          </div>
+          <div class="highlight-card">
+            <div class="card-title">
+              <div class="icon-badge">🏆</div>
+              Strong Performance
+            </div>
+            <p>Best model achieved <strong>high accuracy (0.954)</strong> and <strong>recall (0.910)</strong>, supporting dependable future-state detection.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="team">
+      <div class="container">
+        <div class="section-heading">
+          <h2>Team Members</h2>
+          <p>Master of Information and Data Science, UC Berkeley</p>
+        </div>
+        <div class="team-grid">
+          <div class="team-card">
+            <img src="assets/Ainsley.png" alt="Ainsley Bock" class="team-photo">
+            <div class="team-name">Ainsley Bock</div>
+          </div>
+          <div class="team-card">
+            <img src="assets/Ci.png" alt="Ci Song" class="team-photo">
+            <div class="team-name">Ci Song</div>
+          </div>
+          <div class="team-card">
+            <img src="assets/WooJung.png" alt="WooJung Kim" class="team-photo">
+            <div class="team-name">WooJung Kim</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="footer-cta">
+          <h3>Open Source Project Repository</h3>
+          <p>
+            Want to explore the code, methods, and project artifacts behind GlycoAhead? Visit the GitHub repository for implementation details and supporting materials.
+          </p>
+          <a class="button button-secondary" style="background: white; color: var(--primary-dark); border-color: transparent;" href="https://github.com/WooJung-K/DATASCI210_Capstone" target="_blank" rel="noreferrer">Go to GitHub Repository</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div>UC Berkeley Masters of Information and Data Science Capstone Project</div>
+      <div style="margin-top: 6px;">Ainsley Bock · Ci Song · WooJung Kim</div>
+    </div>
+  </footer>
+  <script>
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      },
+      {
+        threshold: 0.18,
+        rootMargin: '0px 0px -10% 0px'
+      }
+    );
+
+    document.querySelectorAll('main > section').forEach((section, index) => {
+      if (!section.classList.contains('hero')) {
+        section.classList.add('reveal-section');
+        section.style.transitionDelay = `${Math.min(index * 0.06, 0.18)}s`;
+        observer.observe(section);
+      }
+    });
+  </script>
+</body>
+</html>
 
