@@ -39,6 +39,11 @@
       background: linear-gradient(180deg, #f7fcf9 0%, #f4faf7 34%, #ffffff 100%);
       line-height: 1.6;
       scroll-snap-type: y proximity;
+      overflow-x: hidden;
+    }
+
+    main {
+      position: relative;
     }
 
     a {
@@ -80,14 +85,74 @@
       flex-wrap: wrap;
     }
 
-    .nav-links a {
+    .nav-links a:not(.button):not(.github-icon-link) {
       color: var(--muted);
       font-size: 0.96rem;
-      transition: color 0.2s ease;
+      transition: color 0.25s ease, transform 0.25s ease;
+      position: relative;
+      padding-bottom: 4px;
     }
 
-    .nav-links a:hover {
+    .nav-links a:not(.button):not(.github-icon-link)::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 2px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--primary-dark), var(--accent));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.25s ease;
+      opacity: 0.9;
+    }
+
+    .nav-links a:not(.button):not(.github-icon-link):hover {
       color: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .nav-links a:not(.button):not(.github-icon-link):hover::after {
+      transform: scaleX(1);
+    }
+
+    .nav-links .button {
+      padding: 12px 18px;
+      line-height: 1;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: middle;
+      align-self: center;
+      min-height: 44px;
+    }
+
+    .github-icon-link {
+      width: 42px;
+      height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.82);
+      color: var(--primary-dark);
+      border: 1px solid rgba(95, 143, 114, 0.14);
+      box-shadow: 0 8px 20px rgba(92, 136, 113, 0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .github-icon-link:hover {
+      transform: translateY(-1px);
+      background: white;
+      box-shadow: 0 12px 24px rgba(92, 136, 113, 0.12);
+      color: #111827;
+    }
+
+    .github-icon-link svg {
+      width: 20px;
+      height: 20px;
+      display: block;
     }
 
     .button {
@@ -199,6 +264,8 @@
       top: 50%;
       transform: translateY(-50%);
       filter: drop-shadow(0 12px 30px rgba(79, 143, 114, 0.10));
+      transition: transform 0.18s linear, opacity 0.18s linear;
+      will-change: transform, opacity;
     }
 
     .hero-chart-grid {
@@ -272,6 +339,24 @@
       50% {
         opacity: 1;
         transform: scale(1.18);
+      }
+    }
+
+    @keyframes iconBob {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-4px);
+      }
+    }
+
+    @keyframes floatSoft {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-6px);
       }
     }
 
@@ -435,6 +520,8 @@
     .mission-card {
       opacity: 0;
       animation: fadeUpSoft 0.9s ease forwards;
+      transition: transform 0.18s linear, opacity 0.18s linear;
+      will-change: transform, opacity;
     }
 
     .hero-copy {
@@ -455,6 +542,41 @@
       position: relative;
     }
 
+    #research {
+      margin-top: -52px;
+      padding-top: 92px;
+      border-top-left-radius: 42px;
+      border-top-right-radius: 42px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(246, 251, 248, 0.98)) !important;
+      box-shadow: 0 -18px 40px rgba(92, 136, 113, 0.08), 0 18px 50px rgba(92, 136, 113, 0.08);
+      z-index: 4;
+      overflow: hidden;
+    }
+
+    #research::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 140px;
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(123, 183, 156, 0.22), rgba(79, 143, 114, 0.9), rgba(123, 183, 156, 0.22));
+      opacity: 0.85;
+    }
+
+    #research.reveal-section {
+      opacity: 0;
+      transform: translateY(86px) scale(0.985);
+      transition: opacity 0.95s ease, transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    #research.reveal-section.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
     .reveal-section {
       opacity: 0;
       transform: translateY(34px);
@@ -472,13 +594,13 @@
       transform: none;
     }
 
-    main > section:nth-of-type(even):not(.hero) {
+    main > section:nth-of-type(even):not(.hero):not(#research) {
       background: linear-gradient(180deg, rgba(233, 247, 240, 0.72), rgba(244, 251, 247, 0.92));
       border-top: 1px solid rgba(95, 143, 114, 0.06);
       border-bottom: 1px solid rgba(95, 143, 114, 0.06);
     }
 
-    main > section:nth-of-type(odd):not(.hero) {
+    main > section:nth-of-type(odd):not(.hero):not(#research) {
       background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(246, 251, 248, 0.96));
     }
 
@@ -488,6 +610,28 @@
       margin-left: auto;
       margin-right: auto;
       text-align: center;
+      transition: transform 0.7s ease, opacity 0.7s ease;
+    }
+
+    .section-heading h2 {
+      position: relative;
+      display: inline-block;
+    }
+
+    .section-heading h2::after {
+      content: "";
+      display: block;
+      width: 58%;
+      height: 4px;
+      margin: 10px auto 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(123, 183, 156, 0.24), rgba(79, 143, 114, 0.95), rgba(123, 183, 156, 0.24));
+      transform: scaleX(0.72);
+      transition: transform 0.45s ease;
+    }
+
+    .reveal-section.is-visible .section-heading h2::after {
+      transform: scaleX(1);
     }
 
     .two-col {
@@ -520,6 +664,8 @@
       position: relative;
       background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(233,247,240,0.78));
       border-radius: 34px;
+      transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+      will-change: transform;
     }
 
     .quote-card::after {
@@ -589,6 +735,18 @@
     .architecture-card,
     .highlight-card {
       padding: 24px;
+      transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease, background 0.35s ease;
+      will-change: transform;
+    }
+
+    .feature-card:hover,
+    .quote-card:hover,
+    .architecture-card:hover,
+    .highlight-card:hover,
+    .demo-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 24px 56px rgba(92, 136, 113, 0.16);
+      border-color: rgba(95, 143, 114, 0.22);
     }
 
     .feature-card {
@@ -627,6 +785,14 @@
       font-size: 2rem;
       flex-shrink: 0;
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
+      animation: iconBob 4.8s ease-in-out infinite;
+    }
+
+    .feature-card:hover .icon-badge,
+    .highlight-card:hover .icon-badge {
+      transform: translateY(-6px) scale(1.04);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7), 0 16px 28px rgba(92, 136, 113, 0.14);
     }
 
     .architecture-image-wrap {
@@ -656,6 +822,7 @@
       border-radius: 28px;
       box-shadow: var(--shadow);
       backdrop-filter: blur(14px);
+      transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
     }
 
     .demo-video {
@@ -697,6 +864,13 @@
       border: 1px solid rgba(95, 143, 114, 0.12);
       box-shadow: 0 16px 34px rgba(92, 136, 113, 0.12);
       background: #eef7f2;
+      transition: transform 0.4s ease, box-shadow 0.4s ease, filter 0.4s ease;
+    }
+
+    .team-card:hover .team-photo {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 22px 42px rgba(92, 136, 113, 0.18);
+      filter: saturate(1.03);
     }
 
     .team-name {
@@ -708,25 +882,28 @@
     }
 
     .footer-cta {
-      padding: 36px;
-      margin-top: 12px;
+      padding: 24px 26px;
+      margin: 8px auto 0;
+      max-width: 760px;
       text-align: center;
       background: linear-gradient(135deg, #6ea78e, #9fd0b8);
       color: white;
-      border-radius: 28px;
-      box-shadow: 0 20px 48px rgba(95, 143, 114, 0.2);
+      border-radius: 24px;
+      box-shadow: 0 16px 36px rgba(95, 143, 114, 0.16);
     }
 
     .footer-cta h3 {
-      margin: 0 0 12px;
-      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      margin: 0 0 8px;
+      font-size: clamp(1.2rem, 2.2vw, 1.7rem);
       letter-spacing: -0.02em;
     }
 
     .footer-cta p {
-      margin: 0 auto 18px;
-      max-width: 760px;
-      color: rgba(255, 255, 255, 0.9);
+      margin: 0 auto 14px;
+      max-width: 620px;
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 0.96rem;
+      line-height: 1.6;
     }
 
     footer {
@@ -744,21 +921,56 @@
 
     @media (max-width: 1024px) {
       .hero-grid {
-        max-width: 860px;
+        max-width: 900px;
+        grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+        gap: 30px;
       }
 
-      .hero-grid,
       .two-col,
       .quote-grid,
-      .stats-grid,
       .feature-grid,
-      .highlights-grid,
+      .highlights-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
       .team-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        width: min(var(--max-width), calc(100% - 28px));
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+        max-width: 760px;
+      }
+
+      .mission-card {
+        max-width: 540px;
+      }
+
+      .quote-grid,
+      .feature-grid,
+      .highlights-grid {
         grid-template-columns: 1fr 1fr;
       }
     }
 
     @media (max-width: 760px) {
+      #research {
+        margin-top: -28px;
+        padding-top: 72px;
+        border-top-left-radius: 28px;
+        border-top-right-radius: 28px;
+      }
+
       .hero-chart-bg {
         opacity: 0.48;
       }
@@ -789,14 +1001,20 @@
         padding-top: 40px;
       }
 
-      .hero-grid,
       .two-col,
       .quote-grid,
-      .stats-grid,
       .feature-grid,
-      .highlights-grid,
-      .team-grid {
+      .highlights-grid {
         grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .team-grid {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 520px;
       }
 
       .hero-copy,
@@ -820,6 +1038,21 @@
         font-size: 2.35rem;
       }
     }
+
+    @media (max-width: 560px) {
+      .nav-links {
+        gap: 12px;
+      }
+
+      .team-grid {
+        grid-template-columns: 1fr;
+        max-width: 220px;
+      }
+
+      .button {
+        padding: 11px 16px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -832,7 +1065,11 @@
           <a href="#architecture">Architecture</a>
           <a href="#demo">Demo</a>
           <a href="#team">Team</a>
-          <a class="button button-secondary" href="https://github.com/WooJung-K/DATASCI210_Capstone" target="_blank" rel="noreferrer">View GitHub</a>
+          <a class="github-icon-link" href="https://github.com/WooJung-K/DATASCI210_Capstone" target="_blank" rel="noreferrer" aria-label="Open GitHub repository" title="GitHub Repository">
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.866-.013-1.699-2.782.605-3.369-1.344-3.369-1.344-.455-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.091-.647.349-1.088.635-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.026 2.747-1.026.546 1.378.203 2.397.1 2.65.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.31.678.921.678 1.857 0 1.34-.012 2.421-.012 2.75 0 .268.18.58.688.481A10.02 10.02 0 0 0 22 12.017C22 6.484 17.523 2 12 2Z"/>
+            </svg>
+          </a>
         </div>
       </nav>
     </div>
@@ -1036,9 +1273,7 @@
       <div class="container">
         <div class="footer-cta">
           <h3>Open Source Project Repository</h3>
-          <p>
-            Want to explore the code, methods, and project artifacts behind GlycoAhead? Visit the GitHub repository for implementation details and supporting materials.
-          </p>
+          <p>Explore the code, methods, and supporting project materials in our GitHub repository.</p>
           <a class="button button-secondary" style="background: white; color: var(--primary-dark); border-color: transparent;" href="https://github.com/WooJung-K/DATASCI210_Capstone" target="_blank" rel="noreferrer">Go to GitHub Repository</a>
         </div>
       </div>
@@ -1052,6 +1287,37 @@
     </div>
   </footer>
   <script>
+    const hero = document.querySelector('.hero');
+    const heroCopy = document.querySelector('.hero-copy');
+    const missionCard = document.querySelector('.mission-card');
+    const heroChartSvg = document.querySelector('.hero-chart-bg svg');
+
+    const updateHeroScroll = () => {
+      if (!hero) return;
+      const heroHeight = hero.offsetHeight || 1;
+      const rect = hero.getBoundingClientRect();
+      const progress = Math.min(Math.max((-rect.top) / (heroHeight * 0.9), 0), 1);
+
+      if (heroCopy) {
+        heroCopy.style.transform = `translateY(${progress * 24}px)`;
+        heroCopy.style.opacity = `${1 - progress * 0.28}`;
+      }
+
+      if (missionCard) {
+        missionCard.style.transform = `translateY(${progress * 38}px)`;
+        missionCard.style.opacity = `${1 - progress * 0.34}`;
+      }
+
+      if (heroChartSvg) {
+        heroChartSvg.style.transform = `translateY(calc(-50% + ${progress * 18}px)) scale(${1 - progress * 0.02})`;
+        heroChartSvg.style.opacity = `${0.72 - progress * 0.18}`;
+      }
+    };
+
+    updateHeroScroll();
+    window.addEventListener('scroll', updateHeroScroll, { passive: true });
+    window.addEventListener('resize', updateHeroScroll);
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -1069,11 +1335,56 @@
     document.querySelectorAll('main > section').forEach((section, index) => {
       if (!section.classList.contains('hero')) {
         section.classList.add('reveal-section');
-        section.style.transitionDelay = `${Math.min(index * 0.06, 0.18)}s`;
+        section.style.transitionDelay = `${Math.min(index * 0.05, 0.14)}s`;
         observer.observe(section);
       }
     });
+
+    const itemObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      },
+      {
+        threshold: 0.12,
+        rootMargin: '0px 0px -6% 0px'
+      }
+    );
+
+    const animatedItems = document.querySelectorAll('.quote-card, .feature-card, .highlight-card, .team-card, .architecture-card, .demo-card, .footer-cta');
+    animatedItems.forEach((item, index) => {
+      item.style.opacity = '0';
+      item.style.transform = 'translateY(22px)';
+      item.style.transition = `opacity 0.75s ease ${Math.min((index % 4) * 0.07, 0.21)}s, transform 0.75s ease ${Math.min((index % 4) * 0.07, 0.21)}s, box-shadow 0.35s ease, border-color 0.35s ease`;
+      itemObserver.observe(item);
+    });
+
+    document.querySelectorAll('.quote-card, .feature-card, .highlight-card, .team-card, .architecture-card, .demo-card, .footer-cta').forEach((item) => {
+      item.addEventListener('transitionend', () => {
+        if (item.classList.contains('is-visible')) {
+          item.style.opacity = '1';
+          item.style.transform = 'translateY(0)';
+        }
+      }, { once: true });
+    });
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .quote-card.is-visible,
+      .feature-card.is-visible,
+      .highlight-card.is-visible,
+      .team-card.is-visible,
+      .architecture-card.is-visible,
+      .demo-card.is-visible,
+      .footer-cta.is-visible {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+      }
+    `;
+    document.head.appendChild(style);
   </script>
 </body>
 </html>
-
